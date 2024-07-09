@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Subscription {
+  id        String                  @id @default(cuid())
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+  endDate   DateTime?
+  status    EnumSubscriptionStatus?
+  startDate DateTime?
+  user      User?                   @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String?
+  description String?
+  videoUrl    String?
+  duration    Int?
+  course      Course?  @relation(fields: [courseId], references: [id])
+  courseId    String?
+}
+
+model Course {
+  id          String           @id @default(cuid())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  level       EnumCourseLevel?
+  title       String?
+  description String?
+  lessons     Lesson[]
+}
+
+model User {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  firstName     String?
+  lastName      String?
+  username      String         @unique
+  email         String?        @unique
+  password      String
+  roles         Json
+  subscriptions Subscription[]
+}
+
+enum EnumSubscriptionStatus {
+  Option1
+}
+
+enum EnumCourseLevel {
+  Option1
+}
